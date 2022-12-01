@@ -8,6 +8,10 @@ import (
 	"strconv"
 )
 
+const (
+	numOfElves = 3
+)
+
 func main() {
 	file, err := os.Open("day-1/input.txt")
 	if err != nil {
@@ -44,5 +48,12 @@ func main() {
 		return elves[i] > elves[j]
 	})
 
-	log.Print(elves[0] + elves[1] + elves[2])
+	log.Print("First Star: ", elves[0])
+
+	sumOfCalories := 0
+	for i := 0; i < numOfElves; i++ {
+		sumOfCalories += elves[i]
+	}
+
+	log.Print("Second Star: ", sumOfCalories)
 }
