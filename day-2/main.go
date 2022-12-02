@@ -11,9 +11,9 @@ const (
 	bPaper   = "B"
 	cScissor = "C"
 
-	xRock    = "X"
-	yPaper   = "Y"
-	zScissor = "Z"
+	lose = "X"
+	draw = "Y"
+	win  = "Z"
 )
 
 func main() {
@@ -31,37 +31,32 @@ func main() {
 		line := scanner.Text()
 
 		switch string(line[2]) {
-		case xRock:
-			sum += 1
+		case lose:
 			switch string(line[0]) {
 			case aRock:
-				sum += 3
+				sum += 0 + 3
 			case bPaper:
-				sum += 0
+				sum += 0 + 1
 			case cScissor:
-				sum += 6
+				sum += 0 + 2
 			}
-		case yPaper:
-			sum += 2
-
+		case draw:
 			switch string(line[0]) {
 			case aRock:
-				sum += 6
+				sum += 3 + 1
 			case bPaper:
-				sum += 3
+				sum += 3 + 2
 			case cScissor:
-				sum += 0
+				sum += 3 + 3
 			}
-		case zScissor:
-			sum += 3
-
+		case win:
 			switch string(line[0]) {
 			case aRock:
-				sum += 0
+				sum += 6 + 2
 			case bPaper:
-				sum += 6
+				sum += 6 + 3
 			case cScissor:
-				sum += 3
+				sum += 6 + 1
 			}
 		}
 	}
@@ -70,5 +65,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Print("First Star: ", sum)
+	log.Print("Second Star: ", sum)
 }
