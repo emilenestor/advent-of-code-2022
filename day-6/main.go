@@ -9,8 +9,8 @@ import (
 func main() {
 	filePath := "day-6/input_test.txt"
 
-	log.Print("First Star: ", firstStar(filePath))
-	log.Print("Second Star: ", secondStar(filePath))
+	log.Print("First Star: ", getResult(filePath, 4))
+	log.Print("Second Star: ", getResult(filePath, 14))
 }
 
 func distinct(s string) string {
@@ -27,7 +27,7 @@ func distinct(s string) string {
 	return res
 }
 
-func firstStar(filePath string) int {
+func getResult(filePath string, length int) int {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -41,37 +41,6 @@ func firstStar(filePath string) int {
 	}
 
 	num := 0
-	length := 4
-	for i := length - 1; i < len(line); i++ {
-		checkLine := line[i-(length-1) : i+1]
-		distinctLine := distinct(checkLine)
-		if len(distinctLine) > length-1 {
-			return i + 1
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return num
-}
-
-func secondStar(filePath string) int {
-	file, err := os.Open(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	line := ""
-	for scanner.Scan() {
-		line = scanner.Text()
-	}
-
-	num := 0
-	length := 14
 	for i := length - 1; i < len(line); i++ {
 		checkLine := line[i-(length-1) : i+1]
 		distinctLine := distinct(checkLine)
