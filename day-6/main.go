@@ -15,18 +15,12 @@ func main() {
 	log.Print("Second Star: ", getResult(line, 14))
 }
 
-func distinct(s string) string {
+func distinctLetters(s string) bool {
 	letters := make(map[rune]bool)
-	res := ""
 	for _, letter := range s {
-		exists := letters[letter]
-		if exists {
-			continue
-		}
-		res += string(letter)
 		letters[letter] = true
 	}
-	return res
+	return len(letters) == len(s)
 }
 
 func getLine(filePath string) string {
@@ -53,8 +47,7 @@ func getResult(line string, length int) int {
 	num := 0
 	for i := length - 1; i < len(line); i++ {
 		checkLine := line[i-(length-1) : i+1]
-		distinctLine := distinct(checkLine)
-		if len(distinctLine) > length-1 {
+		if distinctLetters(checkLine) {
 			return i + 1
 		}
 	}
