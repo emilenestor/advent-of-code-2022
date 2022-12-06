@@ -9,8 +9,10 @@ import (
 func main() {
 	filePath := "day-6/input_test.txt"
 
-	log.Print("First Star: ", getResult(filePath, 4))
-	log.Print("Second Star: ", getResult(filePath, 14))
+	line := getLine(filePath)
+
+	log.Print("First Star: ", getResult(line, 4))
+	log.Print("Second Star: ", getResult(line, 14))
 }
 
 func distinct(s string) string {
@@ -27,7 +29,7 @@ func distinct(s string) string {
 	return res
 }
 
-func getResult(filePath string, length int) int {
+func getLine(filePath string) string {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -40,6 +42,14 @@ func getResult(filePath string, length int) int {
 		line = scanner.Text()
 	}
 
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return line
+}
+
+func getResult(line string, length int) int {
 	num := 0
 	for i := length - 1; i < len(line); i++ {
 		checkLine := line[i-(length-1) : i+1]
@@ -47,10 +57,6 @@ func getResult(filePath string, length int) int {
 		if len(distinctLine) > length-1 {
 			return i + 1
 		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
 	}
 
 	return num
