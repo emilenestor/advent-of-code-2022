@@ -2,16 +2,29 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 )
 
 func main() {
-	filePath := "day-0/input.txt"
+	filePath := "day-6/input_test.txt"
 
 	log.Print("First Star: ", firstStar(filePath))
 	log.Print("Second Star: ", secondStar(filePath))
+}
+
+func distinct(s string) string {
+	letters := make(map[rune]bool)
+	res := ""
+	for _, letter := range s {
+		exists := letters[letter]
+		if exists {
+			continue
+		}
+		res += string(letter)
+		letters[letter] = true
+	}
+	return res
 }
 
 func firstStar(filePath string) int {
@@ -21,11 +34,20 @@ func firstStar(filePath string) int {
 	}
 	defer file.Close()
 
-	num := 0
 	scanner := bufio.NewScanner(file)
+	line := ""
 	for scanner.Scan() {
-		line := scanner.Text()
-		fmt.Println(line)
+		line = scanner.Text()
+	}
+
+	num := 0
+	length := 4
+	for i := length - 1; i < len(line); i++ {
+		checkLine := line[i-(length-1) : i+1]
+		distinctLine := distinct(checkLine)
+		if len(distinctLine) > length-1 {
+			return i + 1
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -42,11 +64,20 @@ func secondStar(filePath string) int {
 	}
 	defer file.Close()
 
-	num := 0
 	scanner := bufio.NewScanner(file)
+	line := ""
 	for scanner.Scan() {
-		line := scanner.Text()
-		fmt.Println(line)
+		line = scanner.Text()
+	}
+
+	num := 0
+	length := 14
+	for i := length - 1; i < len(line); i++ {
+		checkLine := line[i-(length-1) : i+1]
+		distinctLine := distinct(checkLine)
+		if len(distinctLine) > length-1 {
+			return i + 1
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
