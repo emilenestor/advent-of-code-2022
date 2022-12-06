@@ -96,6 +96,7 @@ func distinct(s string) string {
 			continue
 		}
 		res += string(letter)
+		letters[letter] = true
 	}
 	return res
 }
