@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
-	"math"
+	"fmt"
+	"math/big"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -23,22 +25,31 @@ type Monkey struct {
 var monkeys []Monkey = []Monkey{}
 
 func main() {
-	//log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.DebugLevel)
 	log.SetLevel(log.InfoLevel)
 
 	filePath := "day-11/input_test.txt"
 
-	firstStar(filePath)
-	log.Print("First Star: ")
+	getStar(filePath)
+	arr := []int{}
 	for i, m := range monkeys {
 		log.Infof("Monkey %d inspected %d items", i, m.itemsInspected)
+		arr = append(arr, m.itemsInspected)
 	}
 
-	secondStar(filePath)
-	log.Printf("Second Star: \n")
+	sort.Ints(arr)
+
+	// Reverse
+	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+		arr[i], arr[j] = arr[j], arr[i]
+	}
+
+	monkeyBusiness := arr[0] * arr[1]
+
+	fmt.Println("Monkey Business:", monkeyBusiness)
 }
 
-func firstStar(filePath string) {
+func getStar(filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -62,28 +73,36 @@ func firstStar(filePath string) {
 		}
 	}
 
-	for _, m := range monkeys {
-		log.Debug(m)
+	commonMod := monkeys[0].divideBy
+	for i := 1; i < len(monkeys); i++ {
+		log.Debug(commonMod)
+		commonMod *= monkeys[i].divideBy
 	}
+	log.Debug(commonMod)
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 
-	rounds := 20
+	rounds := 10000
 
 	for i := 0; i < rounds; i++ {
+		log.Debugln("Round:", i+1)
 		for j := 0; j < len(monkeys); j++ {
 			for _, item := range monkeys[j].items {
-				log.Debug(monkeys[j])
+				log.Debug("Item: ", item)
 				//Inspect
 				n := 0
 				ops := strings.Split(monkeys[j].operation, " ")
+
 				switch ops[len(ops)-1] {
 				case "old":
 					n = item
 				default:
-					n, _ = strconv.Atoi(ops[len(ops)-1])
+					n, err = strconv.Atoi(string(ops[len(ops)-1]))
+					if err != nil {
+						log.Fatal(err)
+					}
 				}
 
 				o := ops[len(ops)-2]
@@ -94,21 +113,27 @@ func firstStar(filePath string) {
 					monkeys[j].items[0] = item + n
 				}
 
-				// Divide
-				f := math.Floor(float64(monkeys[j].items[0]) / 3)
-				monkeys[j].items[0] = int(f)
-				log.Debug(monkeys[j])
+				// Reduce stress level
+
+				// Star 1
+				//monkeys[j].items[0] = int(math.Floor(float64(monkeys[j].items[0]) / 3))
+
+				// Star 2
+				monkeys[j].items[0] = monkeys[j].items[0] % commonMod
 
 				//Check division
-				isDivisible := monkeys[j].items[0]%monkeys[j].divideBy == 0
+				// isDivisible := monkeys[j].items[0]%monkeys[j].divideBy == 0
+				isDivisible := monkeys[j].items[0] % monkeys[j].divideBy
+				log.Debugln(monkeys[j].items[0], " % ", big.NewInt(int64(monkeys[j].divideBy)), " = ", isDivisible)
 
 				//Throw to next monkey
 				nextMonkey := 0
-				if isDivisible {
+				if isDivisible == 0 {
 					nextMonkey, _ = strconv.Atoi(string(monkeys[j].ifTrue[len(monkeys[j].ifTrue)-1]))
 				} else {
 					nextMonkey, _ = strconv.Atoi(string(monkeys[j].ifFalse[len(monkeys[j].ifFalse)-1]))
 				}
+				log.Debugln("Thrown to monkey number ", nextMonkey)
 				monkeys[nextMonkey].items = append(monkeys[nextMonkey].items, monkeys[j].items[0])
 				monkeys[j].items = monkeys[j].items[1:]
 
@@ -117,6 +142,7 @@ func firstStar(filePath string) {
 			}
 		}
 	}
+
 }
 
 func parseMonkey(monkeyArr []string) {
@@ -124,7 +150,7 @@ func parseMonkey(monkeyArr []string) {
 	items := re.FindAllString(monkeyArr[1], -1)
 	nums := []int{}
 	for _, item := range items {
-		num, _ := strconv.Atoi(item)
+		num, _ := strconv.Atoi(string(item))
 		nums = append(nums, num)
 	}
 
@@ -132,9 +158,5 @@ func parseMonkey(monkeyArr []string) {
 	divisibleBy, _ := strconv.Atoi(arr[len(arr)-1])
 
 	monkeys = append(monkeys, Monkey{items: nums, operation: monkeyArr[2], divideBy: divisibleBy, ifTrue: monkeyArr[4], ifFalse: monkeyArr[5]})
-
-}
-
-func secondStar(filePath string) {
 
 }
